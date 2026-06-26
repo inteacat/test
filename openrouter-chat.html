@@ -99,6 +99,7 @@
   <label>🟠 OpenRouter 模型</label>
   <select id="model-select" onchange="onModelChange()">
     <option value="openrouter/auto">Auto Router　— 自動選最佳免費模型 ⭐</option>
+    <option value="cognitivecomputations/dolphin-mistral-24b-venice-edition:free">Venice Uncensored Dolphin 24B　— 免費，無限制 🔓</option>
     <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B　— 免費，多語言平衡</option>
     <option value="deepseek/deepseek-r1:free">DeepSeek R1　— 免費，深度推理</option>
     <option value="deepseek/deepseek-v3-0324:free">DeepSeek V3　— 免費，創作寫作</option>
@@ -142,6 +143,7 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 // ── 模型資訊 ──
 const MODEL_INFO = {
   'openrouter/auto':                      { tag:'自動★', cls:'tag-fast', cost:'🆓 自動選最佳免費模型' },
+  'cognitivecomputations/dolphin-mistral-24b-venice-edition:free': { tag:'無限制🔓', cls:'tag-best', cost:'🆓 完全免費 · 移除安全限制' },
   'meta-llama/llama-3.3-70b-instruct:free': { tag:'免費', cls:'tag-bal',  cost:'🆓 完全免費 · 多語言平衡' },
   'deepseek/deepseek-r1:free':            { tag:'免費',  cls:'tag-best', cost:'🆓 完全免費 · 深度推理' },
   'deepseek/deepseek-v3-0324:free':       { tag:'免費',  cls:'tag-bal',  cost:'🆓 完全免費 · 創作寫作' },
