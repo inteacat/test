@@ -98,11 +98,11 @@
 <div class="model-selector">
   <label>🟠 OpenRouter 模型</label>
   <select id="model-select" onchange="onModelChange()">
-    <option value="cognitivecomputations/dolphin-mistral-24b-venice-edition:free">Venice Uncensored Dolphin　— 免費，無限制 ⭐</option>
+    <option value="openrouter/auto">Auto Router　— 自動選最佳免費模型 ⭐</option>
     <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B　— 免費，多語言平衡</option>
     <option value="deepseek/deepseek-r1:free">DeepSeek R1　— 免費，深度推理</option>
-    <option value="qwen/qwen3-235b-a22b:free">Qwen 3 235B　— 免費，最強品質</option>
-    <option value="mistralai/mistral-small-3.2-24b-instruct:free">Mistral Small 3.2 24B　— 免費，速度快</option>
+    <option value="deepseek/deepseek-v3-0324:free">DeepSeek V3　— 免費，創作寫作</option>
+    <option value="google/gemma-3-27b-it:free">Google Gemma 3 27B　— 免費，速度快</option>
   </select>
   <span class="model-tag tag-bal" id="model-tag">推薦</span>
   <span class="model-cost" id="model-cost">💰 Input $0.4 / Output $1.5（每百萬 token）</span>
@@ -141,11 +141,11 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 // ── 模型資訊 ──
 const MODEL_INFO = {
-  'cognitivecomputations/dolphin-mistral-24b-venice-edition:free': { tag:'免費★', cls:'tag-fast', cost:'🆓 完全免費 · 無限制內容' },
-  'meta-llama/llama-3.3-70b-instruct:free':                       { tag:'免費',   cls:'tag-bal',  cost:'🆓 完全免費 · 多語言平衡' },
-  'deepseek/deepseek-r1:free':                                     { tag:'免費',   cls:'tag-best', cost:'🆓 完全免費 · 深度推理' },
-  'qwen/qwen3-235b-a22b:free':                                     { tag:'免費',   cls:'tag-best', cost:'🆓 完全免費 · 最強品質' },
-  'mistralai/mistral-small-3.2-24b-instruct:free':                 { tag:'免費',   cls:'tag-bal',  cost:'🆓 完全免費 · 速度快' },
+  'openrouter/auto':                      { tag:'自動★', cls:'tag-fast', cost:'🆓 自動選最佳免費模型' },
+  'meta-llama/llama-3.3-70b-instruct:free': { tag:'免費', cls:'tag-bal',  cost:'🆓 完全免費 · 多語言平衡' },
+  'deepseek/deepseek-r1:free':            { tag:'免費',  cls:'tag-best', cost:'🆓 完全免費 · 深度推理' },
+  'deepseek/deepseek-v3-0324:free':       { tag:'免費',  cls:'tag-bal',  cost:'🆓 完全免費 · 創作寫作' },
+  'google/gemma-3-27b-it:free':           { tag:'免費',  cls:'tag-bal',  cost:'🆓 完全免費 · 速度快' },
 };
 
 function onModelChange() {
@@ -158,7 +158,7 @@ function onModelChange() {
   localStorage.setItem('openrouter_model', v);
 }
 
-function getModel() { return localStorage.getItem('openrouter_model') || 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free'; }
+function getModel() { return localStorage.getItem('openrouter_model') || 'openrouter/auto'; }
 
 function getVeniceKey() { return localStorage.getItem('openrouter_api_key') || ''; }
 
@@ -401,7 +401,7 @@ document.getElementById('user-input').addEventListener('keydown', function(e) {
 
 // ── 初始化 ──
 (function init() {
-  const saved = localStorage.getItem('openrouter_model') || 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free';
+  const saved = localStorage.getItem('openrouter_model') || 'openrouter/auto';
   document.getElementById('model-select').value = saved;
   onModelChange();
   const sum = loadSummary();
