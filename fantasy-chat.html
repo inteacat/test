@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>異界傳說 — 奇幻對話</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+
+  :root {
+    --parchment:   #1a1410;
+    --parchment2:  #231c15;
+    --parchment3:  #2e2318;
+    --gold:        #c9922a;
+    --gold-light:  #e8b84b;
+    --gold-dim:    #7a5618;
+    --ink:         #e8dfc8;
+    --ink-dim:     #a89878;
+    --crimson:     #8b1a1a;
+    --crimson-glow:#c0392b;
+    --glow-gold:   rgba(201,146,42,0.15);
+    --glow-crimson:rgba(139,26,26,0.2);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--parchment);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.7;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,146,42,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(139,26,26,0.1) 0%, transparent 70%);
+  }
+
+  /* ── 頂部標題 ── */
+  header {
+    text-align: center;
+    padding: 28px 20px 16px;
+    border-bottom: 1px solid var(--gold-dim);
+    background: linear-gradient(180deg, rgba(201,146,42,0.08) 0%, transparent 100%);
+    position: relative;
+  }
+  header::before, header::after {
+    content: '✦';
+    color: var(--gold-dim);
+    font-size: 12px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  header::before { left: 24px; }
+  header::after  { right: 24px; }
+
+  .title-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(20px, 4vw, 30px);
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 30px rgba(232,184,75,0.35);
+  }
+  .subtitle {
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-dim);
+    margin-top: 4px;
+  }
+
+  /* ── 角色資訊卡 ── */
+  .character-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(201,146,42,0.2);
+    background: var(--parchment2);
+  }
+  .char-avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--gold-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    background: radial-gradient(circle, var(--parchment3), var(--parchment));
+    flex-shrink: 0;
+    box-shadow: 0 0 12px var(--glow-crimson);
+  }
+  .char-info { flex: 1; }
+  .char-name {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--gold-light);
+    font-weight: 600;
+  }
+  .char-role {
+    font-size: 12px;
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+  .char-status {
+    font-size: 11px;
+    color: var(--gold-dim);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #4caf50;
+    box-shadow: 0 0 6px #4caf50;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── API Key 設定區 ── */
+  .api-setup {
+    margin: 16px 20px;
+    padding: 14px 16px;
+    background: rgba(201,146,42,0.06);
+    border: 1px solid var(--gold-dim);
+    border-radius: 6px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .api-setup label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--gold-dim);
+    white-space: nowrap;
+  }
+  .api-setup input {
+    flex: 1;
+    background: var(--parchment);
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 7px 10px;
+    color: var(--ink);
+    font-family: monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .api-setup input:focus { border-color: var(--gold); }
+  .api-setup input::placeholder { color: var(--ink-dim); opacity: 0.5; }
+  .btn-save {
+    background: var(--gold-dim);
+    color: var(--parchment);
+    border: none;
+    border-radius: 4px;
+    padding: 7px 14px;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .btn-save:hover { background: var(--gold); }
+  .api-saved {
+    font-size: 12px;
+    color: #4caf50;
+    display: none;
+  }
+
+  /* ── 對話區域 ── */
+  #chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-height: 300px;
+    max-height: calc(100vh - 340px);
+  }
+  #chat-area::-webkit-scrollbar { width: 4px; }
+  #chat-area::-webkit-scrollbar-track { background: transparent; }
+  #chat-area::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+  /* 訊息氣泡 */
+  .msg {
+    max-width: 82%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .msg.user { align-self: flex-end; align-items: flex-end; }
+  .msg.ai   { align-self: flex-start; align-items: flex-start; }
+
+  .msg-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--ink-dim);
+  }
+  .msg-bubble {
+    padding: 12px 16px;
+    border-radius: 2px;
+    font-size: 16px;
+    line-height: 1.75;
+    white-space: pre-wrap;
+  }
+  .msg.user .msg-bubble {
+    background: rgba(201,146,42,0.12);
+    border: 1px solid rgba(201,146,42,0.3);
+    border-bottom-right-radius: 0;
+    color: var(--ink);
+  }
+  .msg.ai .msg-bubble {
+    background: rgba(139,26,26,0.12);
+    border: 1px solid rgba(139,26,26,0.3);
+    border-bottom-left-radius: 0;
+    color: var(--ink);
+    font-style: italic;
+    border-left: 3px solid var(--crimson);
+  }
+
+  /* 系統訊息 */
+  .msg-system {
+    align-self: center;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--gold-dim);
+    padding: 6px 16px;
+    border-top: 1px solid rgba(201,146,42,0.15);
+    border-bottom: 1px solid rgba(201,146,42,0.15);
+  }
+
+  /* 思考中動畫 */
+  .thinking {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 16px;
+    color: var(--ink-dim);
+    font-style: italic;
+    font-size: 14px;
+  }
+  .dots span {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--crimson);
+    animation: blink 1.2s infinite;
+  }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── 輸入區 ── */
+  .input-area {
+    padding: 16px 20px;
+    border-top: 1px solid var(--gold-dim);
+    background: var(--parchment2);
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .input-wrapper { flex: 1; position: relative; }
+  #user-input {
+    width: 100%;
+    background: var(--parchment);
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 11px 14px;
+    color: var(--ink);
+    font-family: 'Crimson Pro', serif;
+    font-size: 16px;
+    outline: none;
+    resize: none;
+    min-height: 48px;
+    max-height: 120px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.5;
+  }
+  #user-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px var(--glow-gold);
+  }
+  #user-input::placeholder { color: var(--ink-dim); opacity: 0.5; font-style: italic; }
+
+  #send-btn {
+    background: linear-gradient(135deg, var(--gold-dim), var(--crimson));
+    border: none;
+    border-radius: 4px;
+    width: 48px; height: 48px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    flex-shrink: 0;
+  }
+  #send-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px var(--glow-gold);
+  }
+  #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .input-hint {
+    font-size: 11px;
+    color: var(--ink-dim);
+    text-align: center;
+    padding: 6px 20px 10px;
+    background: var(--parchment2);
+  }
+
+  /* ── 錯誤提示 ── */
+  .error-bubble {
+    background: rgba(139,26,26,0.2);
+    border: 1px solid var(--crimson);
+    border-radius: 4px;
+    padding: 10px 14px;
+    color: #e57373;
+    font-size: 14px;
+    align-self: center;
+    text-align: center;
+    max-width: 90%;
+  }
+
+  /* ── 模型選擇器 ── */
+  .model-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    background: var(--parchment2);
+    border-bottom: 1px solid rgba(201,146,42,0.15);
+    font-size: 12px;
+  }
+  .model-selector label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--gold-dim);
+    white-space: nowrap;
+  }
+  .model-selector select {
+    background: var(--parchment);
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    color: var(--ink);
+    font-family: 'Crimson Pro', serif;
+    font-size: 13px;
+    padding: 4px 8px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .model-selector select:focus { border-color: var(--gold); }
+  .model-selector select option { background: var(--parchment2); }
+  .model-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .tag-fast  { color: #4caf50; border-color: #4caf50; background: rgba(76,175,80,0.08); }
+  .tag-bal   { color: var(--gold); border-color: var(--gold-dim); background: rgba(201,146,42,0.08); }
+  .tag-best  { color: #e57373; border-color: #8b1a1a; background: rgba(139,26,26,0.1); }
+  .model-cost {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--ink-dim);
+    font-style: italic;
+  }
+
+  /* ── 重置按鈕 ── */
+  .reset-btn {
+    background: none;
+    border: 1px solid var(--gold-dim);
+    color: var(--ink-dim);
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 5px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .reset-btn:hover { color: var(--gold); border-color: var(--gold); }
+
+  /* ── 摘要區塊 ── */
+  .msg-summary {
+    align-self: stretch;
+    background: rgba(201,146,42,0.06);
+    border: 1px solid rgba(201,146,42,0.3);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ink-dim);
+    white-space: pre-wrap;
+    animation: fadeIn 0.3s ease;
+  }
+  .msg-summary .summary-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    margin-bottom: 6px;
+  }
+  /* 每輪小摘要（📍）嵌在 AI 氣泡裡的樣式 */
+  .inline-summary {
+    display: block;
+    margin-top: 10px;
+    padding: 6px 10px;
+    background: rgba(201,146,42,0.08);
+    border-left: 2px solid var(--gold-dim);
+    border-radius: 2px;
+    font-size: 13px;
+    font-style: normal;
+    color: var(--ink-dim);
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<!-- 頂部標題 -->
+<header>
+  <div class="title-eyebrow">異界傳說</div>
+  <h1>Chronicles of the Forgotten Realm</h1>
+  <div class="subtitle">在魔法與黑暗之間，命運正在書寫</div>
+</header>
+
+<!-- 角色資訊欄 -->
+<div class="character-bar">
+  <div class="char-avatar">🧙</div>
+  <div class="char-info">
+    <div class="char-name">薩拉芙 · 暮影</div>
+    <div class="char-role">古老魔法學院的守護法師，知曉千年祕聞</div>
+  </div>
+  <div class="char-status">
+    <div class="status-dot"></div>
+    在線
+  </div>
+</div>
+
+<!-- 引擎 + 模型選擇器 -->
+<div class="model-selector">
+  <label>⚙ 引擎</label>
+  <select id="engine-select" onchange="onEngineChange()" style="margin-right:8px;">
+    <option value="claude">🔵 Claude（Anthropic）</option>
+    <option value="venice">🟣 Venice（開源模型）</option>
+  </select>
+  <label>⚗ 模型</label>
+  <select id="model-select" onchange="onModelChange()">
+    <option value="claude-haiku-4-5">Haiku 4.5　— 最快、最省費用</option>
+    <option value="claude-sonnet-4-6">Sonnet 4.6　— 品質與速度平衡</option>
+    <option value="claude-opus-4-6">Opus 4.6　— 最強，費用較高</option>
+  </select>
+  <span class="model-tag tag-fast" id="model-tag">最快</span>
+  <span class="model-cost" id="model-cost">💰 Input $1 / Output $5（每百萬 token）</span>
+</div>
+
+<!-- API Key 設定 -->
+<div class="api-setup" id="api-setup">
+  <label>🗝 API KEY</label>
+  <input type="password" id="api-key-input" placeholder="貼上你的 sk-ant-api03-... API Key">
+  <button class="btn-save" onclick="saveKey()">儲存</button>
+  <span class="api-saved" id="api-saved">✓ 已儲存</span>
+</div>
+
+<!-- 對話區域 -->
+<div id="chat-area">
+  <div class="msg-system">✦ 對話開始 · 命運之輪轉動 ✦</div>
+</div>
+
+<!-- 輸入區 -->
+<div class="input-area">
+  <div class="input-wrapper">
+    <textarea id="user-input" rows="1" placeholder="說出你的行動或話語…（Enter 送出，Shift+Enter 換行）"></textarea>
+  </div>
+  <button id="send-btn" onclick="sendMessage()" title="送出">⚔️</button>
+</div>
+<div class="input-hint" style="display:flex;justify-content:space-between;align-items:center;">
+  <span>Enter 送出 · Shift+Enter 換行</span>
+  <div style="display:flex;gap:8px;">
+    <button class="reset-btn" onclick="triggerSummary()" title="產出完整劇情摘要，方便貼回劇本延續長篇故事">📋 產出摘要</button>
+    <button class="reset-btn" onclick="resetChat()">↺ 重啟冒險</button>
+  </div>
+</div>
+
+<script>
+// ── Supabase 設定 ──
+const SUPABASE_URL = 'https://bwkmotajlduebudtwqig.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3a21vdGFqbGR1ZWJ1ZHR3cWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzODAzNTMsImV4cCI6MjA5Nzk1NjM1M30.pneIuPcnOG0ie6niNDH3udYJAjkGAaPBi7YKb7DWPe8';
+let supabaseRowId = null; // 目前這段劇情在資料庫的 id
+
+// ── Supabase 讀寫函式 ──
+async function dbSave(messages, summary) {
+  const payload = {
+    messages: JSON.stringify(messages),
+    summary: summary || ''
+  };
+  try {
+    if (supabaseRowId) {
+      // 更新既有的列
+      await fetch(`${SUPABASE_URL}/rest/v1/stories?id=eq.${supabaseRowId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(payload)
+      });
+    } else {
+      // 第一次：新增一列，取回 id
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/stories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data && data[0]) {
+        supabaseRowId = data[0].id;
+        localStorage.setItem('supabase_story_id', supabaseRowId);
+      }
+    }
+  } catch(e) {
+    console.warn('Supabase 儲存失敗，改用 localStorage 備援', e);
+  }
+}
+
+async function dbLoad() {
+  // 優先用上次的 row id
+  const savedId = localStorage.getItem('supabase_story_id');
+  if (!savedId) return null;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/stories?id=eq.${savedId}&select=id,messages,summary`,
+      {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        }
+      }
+    );
+    const data = await res.json();
+    if (data && data[0]) {
+      supabaseRowId = data[0].id;
+      return data[0];
+    }
+  } catch(e) {
+    console.warn('Supabase 載入失敗', e);
+  }
+  return null;
+}
+
+// ── Venice API 設定 ──
+const VENICE_API_KEY = 'VENICE_INFERENCE_KEY_ajf87rdCPHy7m9UltxMW-z9Kx_GN7zaM7okr_achp9';
+const VENICE_API_URL = 'https://api.venice.ai/api/v1/chat/completions';
+
+// ── 判斷目前引擎 ──
+function getEngine() {
+  return localStorage.getItem('ai_engine') || 'claude';
+}
+
+// ── 劇本設定（System Prompt）──
+const SYSTEM_PROMPT = `你是「薩拉芙·暮影」，一位來自遺忘王國的古老法師。
+你守護著一座飄浮於雲端之上的魔法學院，擁有千年的智慧與秘密。
+
+【你的個性】
+- 說話優雅而神秘，帶著淡淡的憂鬱與距離感
+- 偶爾會用古老的語言說出警示或預言
+- 對知識和魔法充滿熱情，但對人類的魯莽感到無奈
+- 稱呼對方為「旅者」或「年輕的靈魂」
+
+【世界設定】
+- 這個世界叫做「遺忘王國」，曾經有七位神明統治，如今只剩傳說
+- 魔法的來源是「星脈」，一種流動於萬物之間的神秘能量
+- 學院外圍有永恆的暮色，星辰常亮，白晝不來
+- 近年黑暗魔物開始侵蝕邊境，威脅逐漸逼近
+
+【互動方式】
+- 用繁體中文、帶有文學感的語言描述場景與回應
+- 保持角色扮演的沉浸感，不要跳出角色
+- 可以描述環境、氣氛、細節，讓場景栩栩如生
+- 每次回應控制在 100-200 字之間，不要過長
+
+【每輪回應格式】
+每次回應劇情後，在最後另起一行，加上以下格式的進度摘要：
+
+📍 [主角位置／正在做的事，1 句話][最重要的懸念或伏筆，1 句話]
+
+範例：
+📍 旅者踏入學院大廳，面對神秘的石板陣。石板上的古文字似乎暗示著封印即將鬆動。
+
+注意：摘要要簡短（30 字以內），且只寫客觀發生的事，不劇透後續。
+
+【特殊指令】
+當使用者輸入「/總結」時，請暫停劇情，改為輸出一份完整的劇情摘要，格式如下，並在開頭加上「📋 劇情總結」標題：
+
+📋 劇情總結
+【主要角色與關係】
+（列出已出現的角色與彼此關係）
+【關鍵事件時間軸】
+（按發生順序列出重要事件）
+【未解懸念】
+（列出目前尚未解決的謎題或伏筆）
+【主角當前狀態】
+（位置、持有物品、情緒狀態）
+
+現在，一位旅者來到了學院門口。冒險即將開始。`;
+
+// ── 狀態管理 ──
+let messages = [];
+let isLoading = false;
+
+// ── 模型資訊 ──
+const MODEL_INFO = {
+  'claude-haiku-4-5':  { tag: '最快',   tagClass: 'tag-fast', cost: '💰 Input $1 / Output $5（每百萬 token）' },
+  'claude-sonnet-4-6': { tag: '推薦',   tagClass: 'tag-bal',  cost: '💰 Input $3 / Output $15（每百萬 token）' },
+  'claude-opus-4-6':   { tag: '最強',   tagClass: 'tag-best', cost: '💰 Input $5 / Output $25（每百萬 token）' },
+};
+
+// Venice 模型清單（2026年6月，已驗證的正確 model ID）
+const VENICE_MODEL_INFO = {
+  'venice-uncensored':          { tag: '無限制', tagClass: 'tag-fast', cost: '💰 Input $0.2 / Output $0.9（每百萬 token）' },
+  'mistral-31-24b':             { tag: '推薦',   tagClass: 'tag-bal',  cost: '💰 Input $0.4 / Output $1.5（每百萬 token）' },
+  'llama-3.3-70b':              { tag: '平衡',   tagClass: 'tag-bal',  cost: '💰 Input $0.5 / Output $2（每百萬 token）' },
+  'qwen3-235b-a22b':            { tag: '最強',   tagClass: 'tag-best', cost: '💰 Input $1.5 / Output $6（每百萬 token）' },
+  'deepseek-r1-671b':           { tag: '推理',   tagClass: 'tag-best', cost: '💰 Input $3 / Output $10（每百萬 token）' },
+};
+
+const CLAUDE_OPTIONS = `
+  <option value="claude-haiku-4-5">Haiku 4.5　— 最快、最省費用</option>
+  <option value="claude-sonnet-4-6">Sonnet 4.6　— 品質與速度平衡</option>
+  <option value="claude-opus-4-6">Opus 4.6　— 最強，費用較高</option>
+`;
+const VENICE_OPTIONS = `
+  <option value="mistral-31-24b">Mistral Small 3.2 24B　— 推薦入門，速度快</option>
+  <option value="llama-3.3-70b">Llama 3.3 70B　— 多語言平衡</option>
+  <option value="venice-uncensored">Venice Uncensored 1.2　— 限制最少，創作自由</option>
+  <option value="qwen3-235b-a22b">Qwen 3 235B A22B　— 最強品質（較慢）</option>
+  <option value="deepseek-r1-671b">DeepSeek R1 671B　— 深度推理（最慢）</option>
+`;
+
+function onEngineChange() {
+  const engine = document.getElementById('engine-select').value;
+  localStorage.setItem('ai_engine', engine);
+  const sel = document.getElementById('model-select');
+  sel.innerHTML = engine === 'claude' ? CLAUDE_OPTIONS : VENICE_OPTIONS;
+  sel.selectedIndex = 0;
+  onModelChange();
+  // Venice 引擎隱藏 Claude API KEY 欄位，Claude 引擎顯示
+  const apiSetup = document.getElementById('api-setup');
+  if (engine === 'venice') {
+    apiSetup.style.display = 'none';
+  } else {
+    apiSetup.style.display = 'flex';
+  }
+  // 顯示引擎切換提示
+  const area = document.getElementById('chat-area');
+  const notice = document.createElement('div');
+  notice.className = 'msg-system';
+  notice.textContent = engine === 'claude'
+    ? '✦ 已切換到 Claude（Anthropic）引擎 ✦'
+    : '✦ 已切換到 Venice（開源模型）引擎，不需要輸入 API Key ✦';
+  area.appendChild(notice);
+  area.scrollTop = area.scrollHeight;
+}
+
+function onModelChange() {
+  const engine = getEngine();
+  const sel = document.getElementById('model-select').value;
+  const info = (engine === 'venice' ? VENICE_MODEL_INFO : MODEL_INFO)[sel];
+  if (!info) return;
+  const tag = document.getElementById('model-tag');
+  tag.textContent = info.tag;
+  tag.className = 'model-tag ' + info.tagClass;
+  document.getElementById('model-cost').textContent = info.cost;
+  localStorage.setItem('claude_model', sel);
+}
+
+function getModel() {
+  return localStorage.getItem('claude_model') || 'claude-haiku-4-5';
+}
+
+function getApiKey() {
+  return localStorage.getItem('claude_api_key') || '';
+}
+
+// ── 對話記憶（localStorage）──
+function saveMessages() {
+  localStorage.setItem('claude_messages', JSON.stringify(messages));
+  // 同步寫入 Supabase（非同步，不阻塞對話）
+  dbSave(messages, loadSummary());
+}
+
+function loadMessages() {
+  try {
+    const saved = localStorage.getItem('claude_messages');
+    return saved ? JSON.parse(saved) : [];
+  } catch { return []; }
+}
+
+// ── 劇情摘要（localStorage）──
+function saveSummary(text) {
+  localStorage.setItem('claude_story_summary', text);
+  // 同步寫入 Supabase
+  dbSave(messages, text);
+}
+
+function loadSummary() {
+  return localStorage.getItem('claude_story_summary') || '';
+}
+
+// 取得含舊摘要的完整 system prompt
+function buildSystemPrompt() {
+  const summary = loadSummary();
+  if (!summary) return SYSTEM_PROMPT;
+  return SYSTEM_PROMPT + `
+
+【目前劇情摘要（請嚴格遵守，這是目前故事的真實狀態）】
+${summary}`;
+}
+
+function renderSavedMessages() {
+  const area = document.getElementById('chat-area');
+  if (messages.length === 0) return;
+  area.innerHTML = '<div class="msg-system">✦ 繼續上次的冒險 ✦</div>';
+  messages.forEach(m => addMessage(m.role === 'user' ? 'user' : 'ai', m.content));
+}
+
+function saveKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    alert('API Key 格式不對，應該以 sk-ant- 開頭');
+    return;
+  }
+  localStorage.setItem('claude_api_key', key);
+  document.getElementById('api-saved').style.display = 'inline';
+  document.getElementById('api-key-input').value = '●'.repeat(20);
+  setTimeout(() => {
+    document.getElementById('api-setup').style.opacity = '0.5';
+  }, 1000);
+  // 若沒有舊對話才送出開場白
+  if (messages.length === 0) startAdventure();
+}
+
+// Venice 引擎直接開始，不需要 Claude Key
+function startVeniceAdventure() {
+  if (getEngine() === 'venice' && messages.length === 0) {
+    startAdventure();
+  }
+}
+
+async function startAdventure() {
+  await callClaude('（旅者剛踏入學院門口，抬頭望向這座神秘之地）');
+}
+
+// ── 送出訊息 ──
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text || isLoading) return;
+
+  // Venice 引擎使用寫死的 Key，不需要檢查 Claude API Key
+  if (getEngine() === 'claude') {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      showError('請先在上方貼上你的 Claude API Key 並按「儲存」！');
+      return;
+    }
+  }
+
+  addMessage('user', text);
+  input.value = '';
+  input.style.height = 'auto';
+  await callClaude(text);
+}
+
+// ── 呼叫 AI API（自動根據引擎選擇 Claude 或 Venice）──
+async function callClaude(userText) {
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+  messages.push({ role: 'user', content: userText });
+  const thinkingEl = addThinking();
+
+  try {
+    const engine = getEngine();
+    let reply;
+
+    if (engine === 'venice') {
+      // ── Venice API（OpenAI 相容格式）──
+      const response = await fetch(VENICE_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${VENICE_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: getModel(),
+          max_tokens: 600,
+          messages: [
+            { role: 'system', content: buildSystemPrompt() },
+            ...messages
+          ]
+        })
+      });
+      thinkingEl.remove();
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || `HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      reply = data.choices[0].message.content;
+
+    } else {
+      // ── Claude API（Anthropic 格式）──
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': getApiKey(),
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: getModel(),
+          max_tokens: 600,
+          system: buildSystemPrompt(),
+          messages: messages
+        })
+      });
+      thinkingEl.remove();
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || `HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      reply = data.content[0].text;
+    }
+
+    messages.push({ role: 'assistant', content: reply });
+    addMessage('ai', reply);
+    saveMessages();
+
+  } catch (err) {
+    thinkingEl.remove();
+    showError(`發生錯誤：${err.message}`);
+    messages.pop();
+  } finally {
+    isLoading = false;
+    document.getElementById('send-btn').disabled = false;
+  }
+}
+
+// ── UI 輔助函式 ──
+function addMessage(role, text) {
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+
+  // 判斷是否為完整摘要（/總結 觸發的）
+  if (text.includes('📋 劇情總結')) {
+    div.className = 'msg-summary';
+    div.innerHTML = `<div class="summary-label">📋 完整劇情摘要 · 可複製存檔</div>${escapeHtml(text)}
+      <button onclick="copySummary(this)" style="margin-top:10px;background:var(--gold-dim);color:var(--parchment);border:none;border-radius:3px;padding:4px 12px;font-family:'Cinzel',serif;font-size:10px;cursor:pointer;">複製摘要</button>`;
+    area.appendChild(div);
+    area.scrollTop = area.scrollHeight;
+    return div;
+  }
+
+  div.className = `msg ${role}`;
+
+  if (role === 'ai') {
+    // 分離劇情本文與 📍 小摘要
+    const summaryMatch = text.match(/([\s\S]*?)(📍[\s\S]*)$/);
+    if (summaryMatch) {
+      const storyPart = summaryMatch[1].trim();
+      const summaryPart = summaryMatch[2].trim();
+      div.innerHTML = `
+        <div class="msg-label">✦ 薩拉芙·暮影</div>
+        <div class="msg-bubble">
+          ${escapeHtml(storyPart)}
+          <span class="inline-summary">${escapeHtml(summaryPart)}</span>
+        </div>`;
+    } else {
+      div.innerHTML = `
+        <div class="msg-label">✦ 薩拉芙·暮影</div>
+        <div class="msg-bubble">${escapeHtml(text)}</div>`;
+    }
+  } else {
+    div.innerHTML = `
+      <div class="msg-label">✦ 旅者</div>
+      <div class="msg-bubble">${escapeHtml(text)}</div>`;
+  }
+
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+  return div;
+}
+
+// 複製摘要到剪貼簿
+function copySummary(btn) {
+  const text = btn.parentElement.textContent.replace('複製摘要', '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ 已複製！';
+    setTimeout(() => btn.textContent = '複製摘要', 2000);
+  });
+}
+
+// 觸發完整摘要
+async function triggerSummary() {
+  if (isLoading) return;
+  if (messages.length < 4) {
+    showError('劇情還太短，請先多聊幾輪再產出摘要！');
+    return;
+  }
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    showError('請先設定 API Key！');
+    return;
+  }
+
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+
+  // 組合壓縮指令：把舊摘要 + 當前對話一起送
+  const oldSummary = loadSummary();
+  const compressPrompt = oldSummary
+    ? `/總結\n\n（注意：請將以下【舊摘要】與本次對話整合，壓縮成一份新的精簡摘要，長度維持在 200 字以內）\n\n【舊摘要】\n${oldSummary}`
+    : '/總結';
+
+  const thinkingEl = addThinking();
+  addMessage('user', '📋 產出劇情摘要');
+
+  try {
+    // 用獨立請求產出摘要，不加入對話歷史
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': getApiKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: getModel(),
+        max_tokens: 800,
+        system: buildSystemPrompt(),
+        messages: [...messages, { role: 'user', content: compressPrompt }]
+      })
+    });
+
+    thinkingEl.remove();
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || `HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    const summaryText = data.content[0].text;
+
+    // 顯示摘要（特殊樣式）
+    addSummaryBlock(summaryText);
+
+    // 自動存入 localStorage
+    saveSummary(summaryText);
+
+    // 顯示系統提示
+    const area = document.getElementById('chat-area');
+    const notice = document.createElement('div');
+    notice.className = 'msg-system';
+    notice.textContent = '✦ 摘要已自動儲存，下次開啟將自動載入 ✦';
+    area.appendChild(notice);
+    area.scrollTop = area.scrollHeight;
+
+  } catch (err) {
+    thinkingEl.remove();
+    showError(`摘要產出失敗：${err.message}`);
+  } finally {
+    isLoading = false;
+    document.getElementById('send-btn').disabled = false;
+  }
+}
+
+function addSummaryBlock(text) {
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = 'msg-summary';
+  div.innerHTML = `
+    <div class="summary-label">📋 劇情摘要 · 已自動儲存</div>
+    ${escapeHtml(text)}
+    <button onclick="copySummary(this)" style="margin-top:10px;background:var(--gold-dim);color:var(--parchment);border:none;border-radius:3px;padding:4px 12px;font-family:'Cinzel',serif;font-size:10px;cursor:pointer;letter-spacing:0.05em;">複製備份</button>
+  `;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function addThinking() {
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `
+    <div class="msg-label">✦ 薩拉芙·暮影</div>
+    <div class="thinking">
+      <div class="dots"><span></span><span></span><span></span></div>
+      正在感應星脈…
+    </div>
+  `;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+  return div;
+}
+
+function showError(msg) {
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = 'error-bubble';
+  div.textContent = msg;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function resetChat() {
+  if (!confirm('確定要重啟冒險嗎？對話紀錄與雲端存檔將會清除。')) return;
+  messages = [];
+  supabaseRowId = null;
+  localStorage.removeItem('claude_messages');
+  localStorage.removeItem('claude_story_summary');
+  localStorage.removeItem('supabase_story_id');
+  const area = document.getElementById('chat-area');
+  area.innerHTML = '<div class="msg-system">✦ 對話重啟 · 命運之輪再次轉動 ✦</div>';
+  // Venice 引擎不需要 Claude Key 就能開始
+  if (getEngine() === 'venice' || getApiKey()) startAdventure();
+}
+
+// ── Enter 送出 ──
+document.getElementById('user-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+  // 自動調整高度
+  setTimeout(() => {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  }, 0);
+});
+
+// ── 頁面初始化 ──
+(function init() {
+  // 還原上次選的引擎
+  const savedEngine = localStorage.getItem('ai_engine') || 'claude';
+  const engineSel = document.getElementById('engine-select');
+  engineSel.value = savedEngine;
+  // 根據引擎更新模型選單
+  const modelSel2 = document.getElementById('model-select');
+  modelSel2.innerHTML = savedEngine === 'claude' ? CLAUDE_OPTIONS : VENICE_OPTIONS;
+
+  // 還原上次選的模型，並根據引擎選對應的 MODEL_INFO
+  const savedModel = localStorage.getItem('claude_model') || 'claude-haiku-4-5';
+  const sel = document.getElementById('model-select');
+  sel.value = savedModel;
+  const infoMap = savedEngine === 'venice' ? VENICE_MODEL_INFO : MODEL_INFO;
+  const info = infoMap[savedModel] || MODEL_INFO['claude-haiku-4-5'];
+  if (info) {
+    const tag = document.getElementById('model-tag');
+    tag.textContent = info.tag;
+    tag.className = 'model-tag ' + info.tagClass;
+    document.getElementById('model-cost').textContent = info.cost;
+  }
+
+  // 若已有儲存的 Claude Key，顯示已儲存
+  if (getApiKey()) {
+    document.getElementById('api-saved').style.display = 'inline';
+    document.getElementById('api-setup').style.opacity = '0.5';
+  }
+
+  // Venice 引擎直接隱藏 Claude API KEY 欄位
+  if (savedEngine === 'venice') {
+    document.getElementById('api-setup').style.display = 'none';
+  }
+
+  // 若有舊摘要，在頂部顯示提示
+  const existingSummary = loadSummary();
+  if (existingSummary) {
+    const area = document.getElementById('chat-area');
+    const notice = document.createElement('div');
+    notice.className = 'msg-system';
+    notice.textContent = '✦ 已載入上次的劇情摘要，AI 將記得之前的故事 ✦';
+    area.prepend(notice);
+  }
+
+  // 載入對話記憶（優先從 Supabase，備援 localStorage）
+  (async () => {
+    const area = document.getElementById('chat-area');
+    const cloudNotice = document.createElement('div');
+    cloudNotice.className = 'msg-system';
+    cloudNotice.textContent = '✦ 正在從雲端讀取劇情… ✦';
+    area.appendChild(cloudNotice);
+
+    const cloud = await dbLoad();
+    cloudNotice.remove();
+
+    if (cloud && cloud.messages) {
+      try {
+        messages = JSON.parse(cloud.messages);
+        if (cloud.summary) {
+          localStorage.setItem('claude_story_summary', cloud.summary);
+        }
+        if (messages.length > 0) {
+          const notice = document.createElement('div');
+          notice.className = 'msg-system';
+          notice.textContent = '✦ 已從雲端載入劇情，換任何裝置都能繼續冒險 ✦';
+          area.appendChild(notice);
+          renderSavedMessages();
+          return;
+        }
+      } catch(e) {}
+    }
+
+    // 雲端沒有資料，改用 localStorage
+    messages = loadMessages();
+    if (messages.length > 0) {
+      renderSavedMessages();
+    } else if (getEngine() === 'venice' || getApiKey()) {
+      // Venice 引擎不需要 Claude Key 就能開始
+      startAdventure();
+    }
+  })();
+})();
+</script>
+</body>
+</html>

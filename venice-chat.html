@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>異界傳說 — Venice 版</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+  :root {
+    --parchment:#1a1410;--parchment2:#231c15;--parchment3:#2e2318;
+    --gold:#c9922a;--gold-light:#e8b84b;--gold-dim:#7a5618;
+    --ink:#e8dfc8;--ink-dim:#a89878;--crimson:#8b1a1a;
+    --glow-gold:rgba(201,146,42,0.15);--glow-crimson:rgba(139,26,26,0.2);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--parchment);color:var(--ink);font-family:'Crimson Pro',Georgia,serif;font-size:17px;line-height:1.7;min-height:100vh;display:flex;flex-direction:column;background-image:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(201,146,42,.07) 0%,transparent 70%),radial-gradient(ellipse 60% 40% at 50% 100%,rgba(139,26,26,.1) 0%,transparent 70%);}
+  header{text-align:center;padding:28px 20px 16px;border-bottom:1px solid var(--gold-dim);background:linear-gradient(180deg,rgba(201,146,42,.08) 0%,transparent 100%);position:relative;}
+  header::before,header::after{content:'✦';color:var(--gold-dim);font-size:12px;position:absolute;top:50%;transform:translateY(-50%);}
+  header::before{left:24px;}header::after{right:24px;}
+  .title-eyebrow{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.35em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:6px;}
+  h1{font-family:'Cinzel',serif;font-size:clamp(20px,4vw,30px);font-weight:700;color:var(--gold-light);letter-spacing:.05em;text-shadow:0 0 30px rgba(232,184,75,.35);}
+  .subtitle{font-size:13px;font-style:italic;color:var(--ink-dim);margin-top:4px;}
+  .character-bar{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid rgba(201,146,42,.2);background:var(--parchment2);}
+  .char-avatar{width:48px;height:48px;border-radius:50%;border:2px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:24px;background:radial-gradient(circle,var(--parchment3),var(--parchment));flex-shrink:0;box-shadow:0 0 12px var(--glow-crimson);}
+  .char-info{flex:1;}.char-name{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-light);font-weight:600;}
+  .char-role{font-size:12px;color:var(--ink-dim);font-style:italic;}
+  .char-status{font-size:11px;color:var(--gold-dim);display:flex;align-items:center;gap:5px;}
+  .status-dot{width:6px;height:6px;border-radius:50%;background:#4caf50;box-shadow:0 0 6px #4caf50;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+  .model-selector{display:flex;align-items:center;gap:10px;padding:8px 20px;background:var(--parchment2);border-bottom:1px solid rgba(201,146,42,.15);font-size:12px;}
+  .model-selector label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;color:var(--gold-dim);white-space:nowrap;}
+  .model-selector select{background:var(--parchment);border:1px solid var(--gold-dim);border-radius:4px;color:var(--ink);font-family:'Crimson Pro',serif;font-size:13px;padding:4px 8px;outline:none;cursor:pointer;}
+  .model-selector select option{background:var(--parchment2);}
+  .model-tag{font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid;white-space:nowrap;}
+  .tag-fast{color:#4caf50;border-color:#4caf50;background:rgba(76,175,80,.08);}
+  .tag-bal{color:var(--gold);border-color:var(--gold-dim);background:rgba(201,146,42,.08);}
+  .tag-best{color:#e57373;border-color:#8b1a1a;background:rgba(139,26,26,.1);}
+  .model-cost{margin-left:auto;font-size:11px;color:var(--ink-dim);font-style:italic;}
+  .venice-badge{background:rgba(139,26,26,.15);border:1px solid rgba(139,26,26,.4);border-radius:4px;padding:6px 16px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;color:#e57373;text-align:center;}
+  #chat-area{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:18px;min-height:300px;max-height:calc(100vh - 320px);}
+  #chat-area::-webkit-scrollbar{width:4px;}
+  #chat-area::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px;}
+  .msg{max-width:82%;display:flex;flex-direction:column;gap:4px;animation:fadeIn .3s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .msg.user{align-self:flex-end;align-items:flex-end;}.msg.ai{align-self:flex-start;align-items:flex-start;}
+  .msg-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--ink-dim);}
+  .msg-bubble{padding:12px 16px;border-radius:2px;font-size:16px;line-height:1.75;white-space:pre-wrap;}
+  .msg.user .msg-bubble{background:rgba(201,146,42,.12);border:1px solid rgba(201,146,42,.3);border-bottom-right-radius:0;color:var(--ink);}
+  .msg.ai .msg-bubble{background:rgba(139,26,26,.12);border:1px solid rgba(139,26,26,.3);border-bottom-left-radius:0;color:var(--ink);font-style:italic;border-left:3px solid var(--crimson);}
+  .msg-system{align-self:center;text-align:center;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;color:var(--gold-dim);padding:6px 16px;border-top:1px solid rgba(201,146,42,.15);border-bottom:1px solid rgba(201,146,42,.15);}
+  .thinking{display:flex;align-items:center;gap:6px;padding:10px 16px;color:var(--ink-dim);font-style:italic;font-size:14px;}
+  .dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--crimson);animation:blink 1.2s infinite;}
+  .dots span:nth-child(2){animation-delay:.2s;}.dots span:nth-child(3){animation-delay:.4s;}
+  @keyframes blink{0%,80%,100%{opacity:.2;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
+  .inline-summary{display:block;margin-top:10px;padding:6px 10px;background:rgba(201,146,42,.08);border-left:2px solid var(--gold-dim);border-radius:2px;font-size:13px;font-style:normal;color:var(--ink-dim);line-height:1.6;}
+  .msg-summary{align-self:stretch;background:rgba(201,146,42,.06);border:1px solid rgba(201,146,42,.3);border-left:3px solid var(--gold);border-radius:4px;padding:12px 16px;font-size:14px;line-height:1.8;color:var(--ink-dim);white-space:pre-wrap;animation:fadeIn .3s ease;}
+  .msg-summary .summary-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--gold-dim);margin-bottom:6px;}
+  .error-bubble{background:rgba(139,26,26,.2);border:1px solid var(--crimson);border-radius:4px;padding:10px 14px;color:#e57373;font-size:14px;align-self:center;text-align:center;max-width:90%;}
+  .input-area{padding:16px 20px;border-top:1px solid var(--gold-dim);background:var(--parchment2);display:flex;gap:10px;align-items:flex-end;}
+  .input-wrapper{flex:1;position:relative;}
+  #user-input{width:100%;background:var(--parchment);border:1px solid var(--gold-dim);border-radius:4px;padding:11px 14px;color:var(--ink);font-family:'Crimson Pro',serif;font-size:16px;outline:none;resize:none;min-height:48px;max-height:120px;transition:border-color .2s,box-shadow .2s;line-height:1.5;}
+  #user-input:focus{border-color:var(--gold);box-shadow:0 0 0 2px var(--glow-gold);}
+  #user-input::placeholder{color:var(--ink-dim);opacity:.5;font-style:italic;}
+  #send-btn{background:linear-gradient(135deg,var(--gold-dim),var(--crimson));border:none;border-radius:4px;width:48px;height:48px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;transition:transform .15s,box-shadow .15s;flex-shrink:0;}
+  #send-btn:hover:not(:disabled){transform:scale(1.05);box-shadow:0 0 12px var(--glow-gold);}
+  #send-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .input-hint{font-size:11px;color:var(--ink-dim);text-align:center;padding:6px 20px 10px;background:var(--parchment2);display:flex;justify-content:space-between;align-items:center;}
+  .reset-btn{background:none;border:1px solid var(--gold-dim);color:var(--ink-dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;padding:5px 12px;border-radius:3px;cursor:pointer;transition:color .2s,border-color .2s;}
+  .reset-btn:hover{color:var(--gold);border-color:var(--gold);}
+  .api-setup{margin:10px 20px;padding:12px 16px;background:rgba(139,26,26,.06);border:1px solid var(--gold-dim);border-radius:6px;display:flex;gap:10px;align-items:center;}
+  .api-setup label{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.1em;color:var(--gold-dim);white-space:nowrap;}
+  .api-setup input{flex:1;background:var(--parchment);border:1px solid var(--gold-dim);border-radius:4px;padding:7px 10px;color:var(--ink);font-family:monospace;font-size:12px;outline:none;transition:border-color .2s;}
+  .api-setup input:focus{border-color:var(--gold);}
+  .api-setup input::placeholder{color:var(--ink-dim);opacity:.5;}
+  .btn-save{background:var(--gold-dim);color:var(--parchment);border:none;border-radius:4px;padding:7px 14px;font-family:'Cinzel',serif;font-size:11px;cursor:pointer;white-space:nowrap;transition:background .2s;}
+  .btn-save:hover{background:var(--gold);}
+  .api-saved{font-size:12px;color:#4caf50;display:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="title-eyebrow">異界傳說 · Venice 版</div>
+  <h1>Chronicles of the Forgotten Realm</h1>
+  <div class="subtitle">開源模型 · 創作自由</div>
+</header>
+
+<div class="character-bar">
+  <div class="char-avatar">🧙</div>
+  <div class="char-info">
+    <div class="char-name">薩拉芙 · 暮影</div>
+    <div class="char-role">古老魔法學院的守護法師，知曉千年祕聞</div>
+  </div>
+  <div class="char-status"><div class="status-dot"></div>在線</div>
+</div>
+
+<!-- Venice 模型選擇器 -->
+<div class="model-selector">
+  <label>🟣 Venice 模型</label>
+  <select id="model-select" onchange="onModelChange()">
+    <option value="mistral-31-24b">Mistral Small 3.2 24B　— 推薦入門，速度快</option>
+    <option value="llama-3.3-70b">Llama 3.3 70B　— 多語言平衡</option>
+    <option value="venice-uncensored">Venice Uncensored 1.2　— 限制最少</option>
+    <option value="qwen3-235b-a22b">Qwen 3 235B A22B　— 最強品質（較慢）</option>
+    <option value="deepseek-r1-671b">DeepSeek R1 671B　— 深度推理（最慢）</option>
+  </select>
+  <span class="model-tag tag-bal" id="model-tag">推薦</span>
+  <span class="model-cost" id="model-cost">💰 Input $0.4 / Output $1.5（每百萬 token）</span>
+</div>
+
+<!-- Venice API Key 輸入 -->
+<div class="api-setup" id="api-setup">
+  <label>🟣 VENICE KEY</label>
+  <input type="password" id="api-key-input" placeholder="貼上你的 VENICE_INFERENCE_KEY_... 或 vapi_...">
+  <button class="btn-save" onclick="saveKey()">儲存</button>
+  <span class="api-saved" id="api-saved">✓ 已儲存</span>
+</div>
+
+<div id="chat-area">
+  <div class="msg-system">✦ 對話開始 · 命運之輪轉動 ✦</div>
+</div>
+
+<div class="input-area">
+  <div class="input-wrapper">
+    <textarea id="user-input" rows="1" placeholder="說出你的行動或話語…（Enter 送出，Shift+Enter 換行）"></textarea>
+  </div>
+  <button id="send-btn" onclick="sendMessage()" title="送出">⚔️</button>
+</div>
+<div class="input-hint">
+  <span>Enter 送出 · Shift+Enter 換行</span>
+  <div style="display:flex;gap:8px;">
+    <button class="reset-btn" onclick="triggerSummary()">📋 產出摘要</button>
+    <button class="reset-btn" onclick="resetChat()">↺ 重啟冒險</button>
+  </div>
+</div>
+
+<script>
+// ── Venice 設定 ──
+// Venice API Key 從 localStorage 讀取（手動貼入）
+const VENICE_API_URL = 'https://api.venice.ai/api/v1/chat/completions';
+
+// ── 模型資訊 ──
+const MODEL_INFO = {
+  'mistral-31-24b':   { tag:'推薦', cls:'tag-bal',  cost:'💰 Input $0.4 / Output $1.5（每百萬 token）' },
+  'llama-3.3-70b':    { tag:'平衡', cls:'tag-bal',  cost:'💰 Input $0.5 / Output $2（每百萬 token）' },
+  'venice-uncensored':{ tag:'無限制',cls:'tag-fast', cost:'💰 Input $0.2 / Output $0.9（每百萬 token）' },
+  'qwen3-235b-a22b':  { tag:'最強', cls:'tag-best', cost:'💰 Input $1.5 / Output $6（每百萬 token）' },
+  'deepseek-r1-671b': { tag:'推理', cls:'tag-best', cost:'💰 Input $3 / Output $10（每百萬 token）' },
+};
+
+function onModelChange() {
+  const v = document.getElementById('model-select').value;
+  const i = MODEL_INFO[v];
+  if (!i) return;
+  const t = document.getElementById('model-tag');
+  t.textContent = i.tag; t.className = 'model-tag ' + i.cls;
+  document.getElementById('model-cost').textContent = i.cost;
+  localStorage.setItem('venice_model', v);
+}
+
+function getModel() { return localStorage.getItem('venice_model') || 'mistral-31-24b'; }
+
+function getVeniceKey() { return localStorage.getItem('venice_api_key') || ''; }
+
+function saveKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key.startsWith('VENICE_INFERENCE_KEY_') && !key.startsWith('vapi_')) {
+    alert('格式不對，應該以 VENICE_INFERENCE_KEY_ 或 vapi_ 開頭');
+    return;
+  }
+  localStorage.setItem('venice_api_key', key);
+  document.getElementById('api-saved').style.display = 'inline';
+  document.getElementById('api-key-input').value = '●'.repeat(24);
+  setTimeout(() => { document.getElementById('api-setup').style.opacity = '0.5'; }, 800);
+  // 儲存後自動開始
+  if (messages.length === 0) callVenice('（旅者剛踏入學院門口，抬頭望向這座神秘之地）');
+}
+
+// ── System Prompt ──
+const SYSTEM_PROMPT = `你是「薩拉芙·暮影」，一位來自遺忘王國的古老法師。
+你守護著一座飄浮於雲端之上的魔法學院，擁有千年的智慧與秘密。
+
+【你的個性】
+- 說話優雅而神秘，帶著淡淡的憂鬱與距離感
+- 偶爾會用古老的語言說出警示或預言
+- 對知識和魔法充滿熱情，但對人類的魯莽感到無奈
+- 稱呼對方為「旅者」或「年輕的靈魂」
+
+【世界設定】
+- 這個世界叫做「遺忘王國」，曾經有七位神明統治，如今只剩傳說
+- 魔法的來源是「星脈」，一種流動於萬物之間的神秘能量
+- 學院外圍有永恆的暮色，星辰常亮，白晝不來
+- 近年黑暗魔物開始侵蝕邊境，威脅逐漸逼近
+
+【互動方式】
+- 用繁體中文、帶有文學感的語言描述場景與回應
+- 保持角色扮演的沉浸感，不要跳出角色
+- 可以描述環境、氣氛、細節，讓場景栩栩如生
+- 每次回應控制在 100-200 字之間，不要過長
+
+【每輪回應格式】
+每次回應劇情後，在最後另起一行加上：
+📍 [主角位置/正在做的事，1句話][最重要的懸念或伏筆，1句話]
+
+【特殊指令】
+當使用者輸入「/總結」時，暫停劇情，輸出完整劇情摘要：
+📋 劇情總結
+【主要角色與關係】【關鍵事件時間軸】【未解懸念】【主角當前狀態】
+
+現在，一位旅者來到了學院門口。冒險即將開始。`;
+
+function buildSystemPrompt() {
+  const s = localStorage.getItem('venice_summary') || '';
+  if (!s) return SYSTEM_PROMPT;
+  return SYSTEM_PROMPT + `\n\n【目前劇情摘要】\n${s}`;
+}
+
+// ── 狀態 ──
+let messages = [];
+let isLoading = false;
+
+// ── localStorage ──
+function saveMessages() { localStorage.setItem('venice_messages', JSON.stringify(messages)); }
+function loadMessages() {
+  try { return JSON.parse(localStorage.getItem('venice_messages') || '[]'); } catch { return []; }
+}
+function saveSummary(t) { localStorage.setItem('venice_summary', t); }
+function loadSummary() { return localStorage.getItem('venice_summary') || ''; }
+
+// ── 送出訊息 ──
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text || isLoading) return;
+  addMessage('user', text);
+  input.value = '';
+  input.style.height = 'auto';
+  await callVenice(text);
+}
+
+// ── 呼叫 Venice API ──
+async function callVenice(userText) {
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+  messages.push({ role: 'user', content: userText });
+  const thinkingEl = addThinking();
+  try {
+    const apiKey = getVeniceKey();
+    if (!apiKey) { thinkingEl.remove(); showError('請先貼上 Venice API Key 並按「儲存」！'); messages.pop(); isLoading=false; document.getElementById('send-btn').disabled=false; return; }
+    const res = await fetch(VENICE_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: getModel(),
+        max_tokens: 600,
+        messages: [
+          { role: 'system', content: buildSystemPrompt() },
+          ...messages
+        ]
+      })
+    });
+    thinkingEl.remove();
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    const reply = data.choices[0].message.content;
+    messages.push({ role: 'assistant', content: reply });
+    addMessage('ai', reply);
+    saveMessages();
+  } catch (err) {
+    thinkingEl.remove();
+    showError(`發生錯誤：${err.message}`);
+    messages.pop();
+  } finally {
+    isLoading = false;
+    document.getElementById('send-btn').disabled = false;
+  }
+}
+
+// ── UI 工具 ──
+function addMessage(role, text) {
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  if (text.includes('📋 劇情總結')) {
+    div.className = 'msg-summary';
+    div.innerHTML = `<div class="summary-label">📋 完整劇情摘要 · 已自動儲存</div>${escapeHtml(text)}
+      <button onclick="copySummary(this)" style="margin-top:10px;background:var(--gold-dim);color:var(--parchment);border:none;border-radius:3px;padding:4px 12px;font-family:'Cinzel',serif;font-size:10px;cursor:pointer;">複製備份</button>`;
+    area.appendChild(div); area.scrollTop = area.scrollHeight; return div;
+  }
+  div.className = `msg ${role}`;
+  if (role === 'ai') {
+    const m = text.match(/([\s\S]*?)(📍[\s\S]*)$/);
+    if (m) {
+      div.innerHTML = `<div class="msg-label">✦ 薩拉芙·暮影</div>
+        <div class="msg-bubble">${escapeHtml(m[1].trim())}<span class="inline-summary">${escapeHtml(m[2].trim())}</span></div>`;
+    } else {
+      div.innerHTML = `<div class="msg-label">✦ 薩拉芙·暮影</div><div class="msg-bubble">${escapeHtml(text)}</div>`;
+    }
+  } else {
+    div.innerHTML = `<div class="msg-label">✦ 旅者</div><div class="msg-bubble">${escapeHtml(text)}</div>`;
+  }
+  area.appendChild(div); area.scrollTop = area.scrollHeight; return div;
+}
+
+function addThinking() {
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `<div class="msg-label">✦ 薩拉芙·暮影</div>
+    <div class="thinking"><div class="dots"><span></span><span></span><span></span></div>正在感應星脈…</div>`;
+  area.appendChild(div); area.scrollTop = area.scrollHeight; return div;
+}
+
+function showError(msg) {
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = 'error-bubble'; div.textContent = msg;
+  area.appendChild(div); area.scrollTop = area.scrollHeight;
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function copySummary(btn) {
+  const text = btn.parentElement.textContent.replace('複製備份','').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ 已複製！';
+    setTimeout(() => btn.textContent = '複製備份', 2000);
+  });
+}
+
+// ── 產出摘要 ──
+async function triggerSummary() {
+  if (isLoading || messages.length < 4) {
+    if (messages.length < 4) showError('劇情還太短，請先多聊幾輪！');
+    return;
+  }
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+  const old = loadSummary();
+  const prompt = old
+    ? `/總結\n\n請將【舊摘要】與本次對話整合壓縮成新摘要（200字以內）：\n\n【舊摘要】\n${old}`
+    : '/總結';
+  const thinkingEl = addThinking();
+  try {
+    const apiKey = getVeniceKey();
+    if (!apiKey) { thinkingEl.remove(); showError('請先貼上 Venice API Key！'); isLoading=false; document.getElementById('send-btn').disabled=false; return; }
+    const res = await fetch(VENICE_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: getModel(), max_tokens: 800,
+        messages: [
+          { role: 'system', content: buildSystemPrompt() },
+          ...messages,
+          { role: 'user', content: prompt }
+        ]
+      })
+    });
+    thinkingEl.remove();
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const summary = data.choices[0].message.content;
+    addMessage('ai', summary);
+    saveSummary(summary);
+    const area = document.getElementById('chat-area');
+    const n = document.createElement('div');
+    n.className = 'msg-system';
+    n.textContent = '✦ 摘要已自動儲存 ✦';
+    area.appendChild(n); area.scrollTop = area.scrollHeight;
+  } catch(e) {
+    thinkingEl.remove();
+    showError(`摘要失敗：${e.message}`);
+  } finally {
+    isLoading = false;
+    document.getElementById('send-btn').disabled = false;
+  }
+}
+
+function resetChat() {
+  if (!confirm('確定要重啟冒險嗎？')) return;
+  messages = [];
+  localStorage.removeItem('venice_messages');
+  localStorage.removeItem('venice_summary');
+  const area = document.getElementById('chat-area');
+  area.innerHTML = '<div class="msg-system">✦ 對話重啟 · 命運之輪再次轉動 ✦</div>';
+  callVenice('（旅者剛踏入學院門口，抬頭望向這座神秘之地）');
+}
+
+// ── Enter 送出 ──
+document.getElementById('user-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  setTimeout(() => { this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,120)+'px'; }, 0);
+});
+
+// ── 初始化 ──
+(function init() {
+  const saved = localStorage.getItem('venice_model') || 'mistral-31-24b';
+  document.getElementById('model-select').value = saved;
+  onModelChange();
+  const sum = loadSummary();
+  if (sum) {
+    const area = document.getElementById('chat-area');
+    const n = document.createElement('div');
+    n.className = 'msg-system';
+    n.textContent = '✦ 已載入上次的劇情摘要 ✦';
+    area.appendChild(n);
+  }
+  // 若已有儲存的 Key，顯示已儲存狀態
+  if (getVeniceKey()) {
+    document.getElementById('api-saved').style.display = 'inline';
+    document.getElementById('api-key-input').value = '●'.repeat(24);
+    document.getElementById('api-setup').style.opacity = '0.5';
+  }
+  messages = loadMessages();
+  if (messages.length > 0) {
+    const area = document.getElementById('chat-area');
+    area.innerHTML = '<div class="msg-system">✦ 繼續上次的冒險 ✦</div>';
+    messages.forEach(m => addMessage(m.role === 'user' ? 'user' : 'ai', m.content));
+  } else if (getVeniceKey()) {
+    callVenice('（旅者剛踏入學院門口，抬頭望向這座神秘之地）');
+  }
+})();
+</script>
+</body>
+</html>
